@@ -1,0 +1,106 @@
+Create Database greensboro_roughriders;
+Use greensboro_roughriders;
+
+Select * From Players;
+
+Create Database ADVstats;
+Use ADVstats;
+
+Create table fileUseAmount
+(
+userName varchar(255),
+fileName varchar(255),
+amount int
+);
+
+Create table fileUseTime
+(
+userName varchar(255),
+fileName varchar(255),
+ts timestamp default Current_Timestamp
+);
+
+Create table favorites
+(
+userName varchar(255),
+folderName varchar(255)
+);
+
+Insert Into fileUseAmount(userName, fileName, amount) 
+Values
+('jkleb', 'test.txt', 0),
+('mmast', 'test1.txt', 0),
+('mnik', 'test2.txt', 0);
+
+Insert Into fileUseTime(userName, fileName, ts) 
+Values
+('jkleb', 'test.txt', '2012-02-04 00:02:21'),
+('mmast', 'test1.txt', '2013-04-11 01:12:25'),
+('mnik', 'test2.txt', '2011-05-08 10:32:29');
+
+Insert Into favorites(userName, folderName) 
+Values
+('jkleb', 'pub/reports/jkleb/operations/2015'),
+('ksim', 'pub/reports/ksim/operations/2014/1'),
+('jwes', 'pub/reports/jwes/operations/2012');
+
+Select * From fileUseAmount;
+Select * From fileUseTime;
+Select * From favorites;
+
+Truncate Table fileUseAmount;
+Truncate Table fileUseTime;
+Truncate Table favorites;
+
+
+Select folderName from favorites;
+
+Insert Into fileUseAmount(userName, fileName, amount) 
+Values
+('jkleb', 'fool.txt', 0);
+
+Insert Into fileUseTime(userName, fileName, ts) 
+Values
+('jkleb', 'fool.txt', '2010-05-04 02:06:21'),
+('jkleb', 'test111.txt', '2012-06-07 02:04:13'),
+('jkleb', 'test39.txt', '2014-03-04 08:07:24'),
+('jkleb', 'test7.txt', '2012-03-09 04:08:13'),
+('jkleb', 'test12.txt', '2010-05-21 05:06:59'),
+('jkleb', 'test00.txt', '2011-03-21 05:08:21'),
+('jkleb', 'test90.txt', '2015-01-16 01:09:55'),
+('jkleb', 'test8.txt', '2011-02-07 08:12:20'),
+('jkleb', 'test34.txt', '2015-07-09 11:22:21'),
+('jkleb', 'test90.txt', '2009-11-11 02:22:21'),
+('jkleb', 'test99.txt', '2016-05-04 02:06:21'),
+('jkleb', 'test5.txt', '2010-06-08 02:06:21'),
+('jkleb', 'fool.txt', '2010-05-04 02:06:21');
+
+Update fileuseamount
+set amount = amount + 1
+where userName = 'jkleb' and fileName = 'test.txt';
+
+select fileName from fileuseamount
+where userName = 'jkleb'
+order by amount DESC Limit 5;
+
+
+Insert Into fileUseAmount(userName, fileName, amount) 
+Values
+('jkleb', 'test111.txt', 3),
+('jkleb', 'test39.txt', 2),
+('jkleb', 'test4.txt', 6),
+('jkleb', 'test5.txt', 9),
+('jkleb', 'test7.txt', 1),
+('jkleb', 'test8.txt', 5),
+('jkleb', 'test12.txt', 17),
+('jkleb', 'test00.txt', 13),
+('jkleb', 'test34.txt', 2),
+('jkleb', 'test90.txt', 6),
+('jkleb', 'test99.txt', 8),
+('jkleb', 'test5.txt', 2);
+
+
+select fileName from fileusetime
+where userName = 'jkleb'
+order by ts DESC Limit 5;
+

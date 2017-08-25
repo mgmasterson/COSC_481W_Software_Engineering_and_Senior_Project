@@ -1,0 +1,222 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using MySql.Data.MySqlClient;
+using System.Data;
+using System.Diagnostics;
+
+public partial class _Default : System.Web.UI.Page
+{
+    MySqlConnection con = new MySqlConnection(@"Data Source=localhost;port=3306;Initial Catalog=advstats;User Id=root;password='g0d0fwar'");
+//    protected bool alreadyExists;
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        viewFavorites(null, null);
+        viewTime(null, null);
+        viewUsage(null, null);
+    }
+
+    protected void addUsage(object sender, EventArgs e)
+    {
+        //check if exists
+        //if not insert
+        //if it does, increment amount
+        int retrievedValue = 0;
+        con.Open();
+        MySqlCommand cmd = con.CreateCommand();
+        cmd.CommandType = CommandType.Text;
+        cmd.CommandText = "select fileName from fileuseamount where userName = 'jkleb' and fileName = 'duh.txt';";
+        using (MySqlDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                if (reader.GetString(0) == "duh.txt")
+                {
+                    retrievedValue++;
+                }
+            }
+            reader.Close();
+        }
+        con.Close();
+        if (retrievedValue == 0)
+        {
+            con.Open();
+            MySqlCommand cmd2 = con.CreateCommand();
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = "insert into fileuseamount values('jkleb', 'duh.txt', 1);";
+            cmd.ExecuteNonQuery();
+            con.Close();
+        }
+        else
+        {
+            con.Open();
+            MySqlCommand cmd2 = con.CreateCommand();
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = "update fileuseamount set amount = amount + 1 where userName = 'jkleb' and fileName = 'duh.txt';";
+            cmd.ExecuteNonQuery();
+            con.Close();
+
+        }
+        retrievedValue = 0;
+
+    }
+
+    protected void viewUsage(object sender, EventArgs e)
+    {
+        //add logic to get top 5
+        con.Open();
+        MySqlCommand cmd = con.CreateCommand();
+        cmd.CommandType = CommandType.Text;
+        cmd.CommandText = "select fileName from fileuseamount where userName = 'jkleb' order by amount DESC Limit 5; ";
+        using (MySqlDataReader reader = cmd.ExecuteReader())
+        {
+            mostOftenViewedArea.InnerHtml = "";
+            while (reader.Read())
+            {
+                mostOftenViewedArea.Controls.Add(new LiteralControl("<div>"));
+                var link = new LinkButton();
+                link.Text = reader.GetString(0);
+                link.ID = "path" + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(reader.GetString(0)));
+                mostOftenViewedArea.Controls.Add(link);
+
+                var deleteButton = new LinkButton();
+                deleteButton.Text = "[X]";
+                deleteButton.ID = "";
+                mostOftenViewedArea.Controls.Add(deleteButton);
+
+                mostOftenViewedArea.Controls.Add(new LiteralControl("</div>"));
+
+            }
+            reader.Close();
+        }
+        con.Close();
+    }
+
+    protected void addTime(object sender, EventArgs e)
+    {
+        con.Open();
+        MySqlCommand cmd = con.CreateCommand();
+        cmd.CommandType = CommandType.Text;
+        cmd.CommandText = "insert into fileusetime values('jkleb', 'duh.txt', '2011-04-22 01:16:25');";
+        cmd.ExecuteNonQuery();
+        con.Close();
+
+        //logic to keep amount to entries below 10
+
+    }
+
+    protected void deleteTime(object sender, EventArgs e)
+    {
+        con.Open();
+        MySqlCommand cmd = con.CreateCommand();
+        cmd.CommandType = CommandType.Text;
+        cmd.CommandText = "delete from fileusetime where userName='jkleb';";
+        cmd.ExecuteNonQuery();
+        con.Close();
+
+    }
+
+    protected void viewTime(object sender, EventArgs e)
+    {
+        //add logic to get top 5
+        con.Open();
+        MySqlCommand cmd = con.CreateCommand();
+        cmd.CommandType = CommandType.Text;
+        cmd.CommandText = "select fileName from fileusetime where userName = 'jkleb' order by ts DESC Limit 5;";
+        using (MySqlDataReader reader = cmd.ExecuteReader())
+        {
+            recentlyViewedArea.InnerHtml = "";
+            while (reader.Read())
+            {
+                recentlyViewedArea.Controls.Add(new LiteralControl("<div>"));
+                var link = new LinkButton();
+                link.Text = reader.GetString(0);
+                link.ID = "path" + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(reader.GetString(0)));
+                recentlyViewedArea.Controls.Add(link);
+
+                var deleteButton = new LinkButton();
+                deleteButton.Text = "[X]";
+                deleteButton.ID = "";
+                recentlyViewedArea.Controls.Add(deleteButton);
+
+                recentlyViewedArea.Controls.Add(new LiteralControl("</div>"));
+            }
+        }
+            con.Close();
+    }
+
+    protected void addFavorites(object sender, EventArgs e)
+    {
+        int retrievedValue = 0;
+        con.Open();
+        MySqlCommand cmd = con.CreateCommand();
+        cmd.CommandType = CommandType.Text;
+        cmd.CommandText = "select folderName from favorites where userName = '" + User.Identity.Name + "' and folderName = 'pub/reports/jkleb/operations/2014/3';";
+        using (MySqlDataReader reader = cmd.ExecuteReader())
+        {
+            while(reader.Read())
+            {
+                if (reader.GetString(0) == "pub/reports/jkleb/operations/2014/3")
+                {
+                    retrievedValue++;
+                }
+            }
+            reader.Close();
+        }
+        con.Close();
+        if(retrievedValue == 0)
+        {
+            con.Open();
+            MySqlCommand cmd2 = con.CreateCommand();
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = "insert into favorites values('" + User.Identity.Name + "', 'pub/reports/jkleb/operations/2014/3');";
+            cmd.ExecuteNonQuery();
+            con.Close();
+        }
+        retrievedValue = 0;
+        Page_Load(null, null);
+    }
+
+    protected void deleteFavorites(object sender, EventArgs e)
+    {
+        con.Open();
+        MySqlCommand cmd = con.CreateCommand();
+        cmd.CommandType = CommandType.Text;
+        cmd.CommandText = "delete from favorites where folderName = 'pub/reports/jkleb/operations/2014/3';";
+        cmd.ExecuteNonQuery();
+        con.Close();
+        Page_Load(null, null);
+    }
+
+    protected void viewFavorites(object sender, EventArgs e)
+    {
+        con.Open();
+        MySqlCommand cmd = con.CreateCommand();
+        cmd.CommandType = CommandType.Text;
+        cmd.CommandText = "select folderName from favorites where userName = 'jkleb';";
+        using (MySqlDataReader reader = cmd.ExecuteReader())
+        {
+            favoritesArea.InnerHtml = "";
+            while (reader.Read())
+            {
+                favoritesArea.Controls.Add(new LiteralControl("<div>"));
+                var link = new LinkButton();
+                link.Text = reader.GetString(0);
+                link.ID = "path" + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(reader.GetString(0)));
+                favoritesArea.Controls.Add(link);
+
+                var deleteButton = new LinkButton();
+                deleteButton.Text = "[X]";
+                deleteButton.ID = "";
+                favoritesArea.Controls.Add(deleteButton);
+
+                favoritesArea.Controls.Add(new LiteralControl("</div>"));
+            }
+            reader.Close();
+        }
+        con.Close();
+    }
+}
