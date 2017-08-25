@@ -1,0 +1,1 @@
+This was a senior group project for a AdvantageCS. It was written in VisualStudio and MySQL server.
